@@ -1,6 +1,7 @@
 package com.bignerdranch.android.geoquiz
 
 import android.app.Activity
+import android.content.ClipData.newIntent
 import android.content.ContentValues.TAG
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
