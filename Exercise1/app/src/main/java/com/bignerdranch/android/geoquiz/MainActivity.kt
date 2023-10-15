@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == Activity.RESULT_OK){
-                quizViewModel.isCheater = result.data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false
+                quizViewModel.setCheatedForCurrentQuestion(result.data?.getBooleanExtra(EXTRA_ANSWER_SHOWN, false) ?: false)
             }
         }
 
@@ -34,7 +34,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        Log.d(TAG, "Got a QuizviewModel: $quizViewModel")
 
         binding.trueButton.setOnClickListener {
             checkAnswer(true)
@@ -68,12 +67,21 @@ class MainActivity : AppCompatActivity() {
         val correctAnswer = quizViewModel.currentQuestionAnswer
 
         val messageResId = when {
-            quizViewModel.isCheater -> R.string.judgement_toast
-            userAnswer == correctAnswer -> R.string.correct_toast
+            quizViewModel.isCheaterForCurrentQuestion() -> R.string.judgement_toast
+            userAnswer == correctAnswer -> {
+                if (!quizViewModel.isCheaterForCurrentQuestion()) {
+                    R.string.correct_toast
+                } else {
+                    // Display a different message if the user cheated but got it right
+                    R.string.judgement_toast
+                }
+            }
             else -> R.string.incorrect_toast
         }
 
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show()
-    }
 
+        // If the user cheated on this question, mark it as cheated
+
+    }
 }
